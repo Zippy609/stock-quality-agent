@@ -1,13 +1,16 @@
 # Program: Scrapes Screener.in for stock data (PnL, Balance Sheet, Cashflow, Peers, Ratios, Shareholding)
+
+import os
 from io import StringIO
 from bs4 import BeautifulSoup
 import pandas as pd
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager
 import time
-import chromedriver_binary  # Ensures chromedriver is available
 
 def extract_tables_in_section(html_content, section_id):
     soup = BeautifulSoup(html_content, 'html.parser')
@@ -34,7 +37,7 @@ def click_button(driver, button_xpath):
         button.click()
         return True
     except Exception as e:
-        print(f"Error clicking button: {e}")
+        print(f"Error clicking button '{button_xpath}': {e}")
         return False
 
 def scrape_stock(stock_name="TCS"):
@@ -50,18 +53,17 @@ def scrape_stock(stock_name="TCS"):
         url = f"https://www.screener.in/company/{stock_name}/consolidated/"
         results.append(f'[INFO]: URL: {url}')
 
-        # Headless Chrome options for Linux/Render
         options = webdriver.ChromeOptions()
         options.add_argument("--headless")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
-        options.add_argument("--disable-gpu")
         options.add_argument("--window-size=1920,1080")
 
-        driver = webdriver.Chrome(options=options)
+        service = Service(ChromeDriverManager().install())
+        driver = webdriver.Chrome(service=service, options=options)
         driver.get(url)
 
-        # Click expand buttons
+        # Click expand buttons if available
         for btn_text in ["Borrowings", "Other Assets", "Cash from Investing Activity"]:
             button_xpath = f'//button[contains(text(), "{btn_text}")]'
             click_button(driver, button_xpath)
@@ -76,7 +78,7 @@ def scrape_stock(stock_name="TCS"):
             tables = extract_tables_in_section(html_content, each_section_id)
             if tables:
                 dfs = tables_to_dataframes(tables)
-                # Rename 'Unnamed: 0' to 'Parameters'
+                # Rename 'Unnamed: 0' to 'Parameters' for clarity
                 for df in dfs:
                     if 'Unnamed: 0' in df.columns:
                         df.rename(columns={'Unnamed: 0': 'Parameters'}, inplace=True)
@@ -91,4 +93,4 @@ if __name__ == "__main__":
     status, data = scrape_stock("TCS")
     print(status)
     for k, v in data.items():
-        print(f"Section: {k}, Tables: {len(v)}")
+        print(f"Section: {k}, Tables found: {len(v)}")

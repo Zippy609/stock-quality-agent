@@ -1,1 +1,1 @@
-dashpandasbeautifulsoup4seleniumchromedriver-binaryplotly
+dashpandasbeautifulsoup4seleniumplotlywebdriver-manager
