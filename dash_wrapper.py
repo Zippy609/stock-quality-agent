@@ -1,8 +1,9 @@
 import dash
 from dash import html, dcc, dash_table, Input, Output, State
 import pandas as pd
-from extract_data_from_screener_site import scrape_stock  # your original scraping program
+from extract_data_from_screener_site import scrape_stock  # scraper program
 import plotly.express as px
+import os
 
 SECTION_NAMES = {
     'quarters': 'Quarterly P&L',
@@ -15,7 +16,7 @@ SECTION_NAMES = {
 }
 
 app = dash.Dash(__name__)
-server = app.server
+server = app.server  # Required for Render
 
 app.layout = html.Div([
     html.H1("Stock Screener Data", style={'textAlign': 'center'}),
@@ -55,8 +56,6 @@ def update_tabs(n_clicks, stock_symbol):
                 continue
 
             df = df.copy()
-            if 'Unnamed: 0' in df.columns:
-                df.rename(columns={'Unnamed: 0': 'Parameters'}, inplace=True)
 
             tab_label = f"📊 {friendly_name} Table {i}"
             tabs.append(
@@ -142,9 +141,9 @@ def update_tabs(n_clicks, stock_symbol):
 
     if not tabs:
         tabs.append(dcc.Tab(label="No Data Available", children=[html.Div("No tables found.")]))
-        status_message = f"No tables found for stock symbol '{stock_symbol.upper()}'"
 
     return dcc.Tabs(tabs), status_message
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 8050))
+    app.run_server(host="0.0.0.0", port=port, debug=True)

@@ -1,6 +1,1 @@
-flask
-dash
-selenium
-beautifulsoup4
-pandas
-requests
+dashpandasbeautifulsoup4seleniumchromedriver-binaryplotly

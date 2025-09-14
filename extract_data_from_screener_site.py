@@ -1,5 +1,4 @@
 # Program: Scrapes Screener.in for stock data (PnL, Balance Sheet, Cashflow, Peers, Ratios, Shareholding)
-import os
 from io import StringIO
 from bs4 import BeautifulSoup
 import pandas as pd
@@ -8,18 +7,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
-import win32com.client
-
-def read_stock_name_from_excel(file_path):
-    try:
-        excel_app = win32com.client.Dispatch('Excel.Application')
-        workbook = excel_app.Workbooks.Open(file_path)
-        worksheet = workbook.Sheets('GenRpt')
-        stock_name = worksheet.Range('B1').Value
-        return stock_name
-    except Exception as e:
-        print(f'Error reading stock name: {e}')
-        return None
+import chromedriver_binary  # Ensures chromedriver is available
 
 def extract_tables_in_section(html_content, section_id):
     soup = BeautifulSoup(html_content, 'html.parser')
@@ -62,9 +50,14 @@ def scrape_stock(stock_name="TCS"):
         url = f"https://www.screener.in/company/{stock_name}/consolidated/"
         results.append(f'[INFO]: URL: {url}')
 
-        chrome_driver_path = r'C:\Users\Anish\.cache\selenium\chromedriver\win64\119.0.6045.105\chromedriver.exe'
+        # Headless Chrome options for Linux/Render
         options = webdriver.ChromeOptions()
-        options.add_argument(f"executable_path={chrome_driver_path}")
+        options.add_argument("--headless")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--disable-gpu")
+        options.add_argument("--window-size=1920,1080")
+
         driver = webdriver.Chrome(options=options)
         driver.get(url)
 
