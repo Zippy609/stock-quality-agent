@@ -1,4 +1,4 @@
-# Use official Python 3.12 slim image
+# Use official Python 3.12 slim image 
 FROM python:3.12-slim
 
 # Set working directory
@@ -9,7 +9,7 @@ COPY requirements.txt .
 
 # Upgrade pip, setuptools, wheel, then install dependencies
 RUN python -m pip install --upgrade pip setuptools wheel \
-    && pip install --no-cache-dir -r requirements.txt
+    && pip install --no-cache-dir --root-user-action=ignore -r requirements.txt
 
 # Copy the rest of the application
 COPY . .
