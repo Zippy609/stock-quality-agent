@@ -1,7 +1,13 @@
 services:
   - type: web
     name: stock-scraper
-    env: python
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12"
     plan: free
-    buildCommand: apt-get update && apt-get install -y chromium-browser && pip install -r requirements.txt
+    buildCommand: |
+      sudo apt-get update
+      sudo apt-get install -y build-essential python3-dev wget gnupg
+      python -m pip install --upgrade pip setuptools wheel
+      pip install -r requirements.txt
     startCommand: python extract_data_from_screener_site.py
