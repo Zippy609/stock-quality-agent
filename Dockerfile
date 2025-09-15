@@ -1,22 +1,21 @@
 # Use official Python 3.12 slim image
-FROM python:3.12.2-slim
+FROM python:3.12-slim
 
-# Set working directory inside the container
+# Set working directory
 WORKDIR /app
 
-# Copy requirements first for caching
+# Copy only requirements first to leverage Docker cache
 COPY requirements.txt .
 
-# Upgrade pip and install dependencies
-RUN python -m pip install --upgrade pip setuptools wheel
-RUN pip install --no-cache-dir -r requirements.txt
+# Upgrade pip, setuptools, wheel, then install dependencies
+RUN python -m pip install --upgrade pip setuptools wheel \
+    && pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of your project
+# Copy the rest of the application
 COPY . .
 
-# Expose the port Render will assign (default 10000)
+# Expose Render's port
 ENV PORT 10000
-EXPOSE 10000
 
-# Set the default command to run your Dash app
-CMD ["python", "wrapper.py"]
+# Command to run the Dash app
+CMD ["python", "dash_wrapper.py"]
