@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: stock-scraper
+    env: python
+    plan: free
+    buildCommand: apt-get update && apt-get install -y chromium-browser && pip install -r requirements.txt
+    startCommand: python extract_data_from_screener_site.py
