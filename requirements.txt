@@ -1,6 +1,6 @@
 dash==2.16.1
 plotly==5.20.0
-pandas==2.1.1
+pandas==2.1.0
 beautifulsoup4==4.12.2
 selenium==5.9.0
 gunicorn==21.2.0
