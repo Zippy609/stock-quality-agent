@@ -7,7 +7,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from webdriver_manager.chrome import ChromeDriverManager
+#from webdriver_manager.chrome import ChromeDriverManager
 import time
 
 
@@ -134,8 +134,11 @@ def scrape_stock(stock_name="TCS"):
             button_xpath = f'//button[contains(text(), "{btn_text}")]'
             click_button(driver, button_xpath)
 
-        time.sleep(5)
+            WebDriverWait(driver, 15).until(
+            EC.presence_of_element_located((By.ID, "profit-loss"))
+        )
         html_content = driver.page_source
+
 
         # Extract standard sections
         section_ids = [
